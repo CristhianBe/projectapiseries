@@ -31,7 +31,7 @@ const renderShow = async (name) => {
   $episodes.setHTMLUnsafe("");
 
   try {
-    const ID = await getShowId(name);
+    const ID = /^\d+$/.test(name) ? name : await getShowId(name);
     const show = await getShowData(ID);
     const seasons = await getEpisodeList(ID);
 

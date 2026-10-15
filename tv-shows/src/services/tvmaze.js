@@ -1,6 +1,5 @@
 const API = "https://api.tvmaze.com";
 
-// Busca el ID de una serie a partir de su nombre
 export const getShowId = async (name) => {
   const URL = `${API}/singlesearch/shows?q=${encodeURIComponent(name)}`;
   const response = await fetch(URL);
@@ -13,19 +12,22 @@ export const getShowId = async (name) => {
   return show.id;
 };
 
-// Datos principales de la serie: { name, rating, image }
+
+const PLACEHOLDER_IMAGE = "https://placehold.co/210x295";
+
 export const getShowData = async (id) => {
   const URL = `${API}/shows/${id}`;
-  const show = await fetch(URL).then((res) => res.json());
+  const response = await fetch(URL);
+  if (!response.ok) throw new Error(`No existe ninguna serie con el ID ${id}`);
+  const data = await response.json();
 
   return {
-    name: show.name,
-    rating: show.rating.average,
-    image: show.image?.medium ?? "",
+    name: data.name,
+    rating: data.rating.average,
+    image: data.image?.medium ?? PLACEHOLDER_IMAGE,
   };
 };
 
-// Episodios agrupados por temporada
 export const getEpisodeList = async (id) => {
   const URL = `${API}/shows/${id}/episodes`;
   const episodes = await fetch(URL).then((res) => res.json());
@@ -38,4 +40,7 @@ export const getEpisodeList = async (id) => {
 
   const episodesBySeason = Object.groupBy(episodeList, (episode) => episode.season);
   return episodesBySeason;
+
+  
+
 };
